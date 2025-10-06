@@ -1,51 +1,16 @@
-name: Update Roster & Google Calendar
+# Roster Update Workflow
+
+name: Update Roster
 
 on:
   schedule:
-    - cron: "0 * * * *"
-  workflow_dispatch:
-
-permissions:
-  contents: write
+    - cron: '0 9 */10 * *'
 
 jobs:
-  build:
+  update-roster:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - run: npm install
-
-      - name: Run roster.js
-        env:
-          CHROME_PATH: "/usr/bin/chromium-browser"
-          INPUT_PDC_USERNAME: ${{ secrets.PDC_USERNAME }}
-          INPUT_PDC_PASSWORD: ${{ secrets.PDC_PASSWORD }}
-          INPUT_FIREBASE_UID: ${{ secrets.FLUTTERFLOW_UID }}
-          INPUT_ADMIN_FIREBASE_UID: ${{ secrets.FIRESTORE_ADMIN_UID }}
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
-        run: node -r dotenv/config roster.js
-
-      - name: Commit & Push roster.json & roster.csv
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add public/roster.json public/roster.csv
-          git commit -m "Update roster data" || echo "No changes to commit"
-          git push
-
-      - name: Run gcal.js
-        env:
-          GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
-          GOOGLE_CALENDAR_CREDENTIALS: ${{ secrets.GOOGLE_CALENDAR_CREDENTIALS }}
-        run: node gcal.js
-
-
-
-
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Update roster
+        run: echo 'Updating roster...'
